@@ -42,6 +42,10 @@ class Conversation:
             get_chat_history=lambda h: h,
             verbose=debug_mode)
         self.debug = debug_mode
+        self.hot_start()
+
+    def hot_start(self):
+        self.chain({'question': "What are some milestone model architectures and papers in the last few years?"})
 
     def achat(self):
         query = input("Query : ")
