@@ -25,3 +25,7 @@ Utilizes LLMs and open-source vector indexing and storage frameworks to answer s
 - Summary ? Keep the conversation handy. Then generate summary
 - Scaling plan. Think about this
 - Clean README, pipreq
+
+## to do items
+- Try refine chain
+- 
