@@ -21,7 +21,7 @@ db = embedder.get_vectorstore()
 
 def single_query(query='What are some milestone model architectures and papers in the last few years?'):
     relevant_docs = db.similarity_search(query, 5)
-    chain = load_qa_chain(OpenAI(temperature=0), chain_type="stuff")
+    chain = load_qa_chain(OpenAI(temperature=0), chain_type="refine")
     return chain({"input_documents": relevant_docs, "question": query})
 
 
