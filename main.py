@@ -26,15 +26,7 @@ def single_query(query='What are some milestone model architectures and papers i
 
 
 
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.agents import initialize_agent
 
-def conversation(q1,q2):
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0), db.as_retriever(), memory=memory)
-    print(conversation_chain({'question': q1})['answer'])
-    print(conversation_chain({'question': q2})['answer'])
 
 
 if __name__ == '__main__':
