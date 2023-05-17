@@ -17,4 +17,3 @@ os.environ['OPENAI_API_KEY'] = "sk-3xbIqKhJNCGpok9KWKHnT3BlbkFJ3zgHQoui5w7OjIQRd
 embedder = Embedder()
 embedder.embed_all_docs()
 
-
