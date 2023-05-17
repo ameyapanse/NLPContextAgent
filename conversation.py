@@ -59,14 +59,22 @@ class Conversation:
         lectures_home = "https://stanford-cs324.github.io/winter2022/lectures/"
         table_home = "https://github.com/Hannibal046/Awesome-LLM/blob/main/README.md#milestone-papers"
         print('References : ')
+        referred = []
         for sd in source_docs:
             if sd.metadata.get('file', ''):
                 file = sd.metadata.get('file')
                 if file != 'table':
                     title = '-'.join(sd.page_content.split('\n')[0].lower().split())
+                    if file + '/' + title in referred:
+                        continue
                     print(lectures_home + file + '/#' + title)
+                    referred.append(file+ '/'+title)
                 else:
+                    if file in referred:
+                        continue
                     print(table_home + file)
+                    referred.append(file)
+
     def chat(self):
         self._start_chat()
         continue_conversation = self.achat()
@@ -76,7 +84,7 @@ class Conversation:
 
     def _start_chat(self):
         print("Instructions : Enter your queries in stdin when prompted. The agent will reply.")
-        print("To end the conversation, enter 'exit' or empty. The agent will print a summary of the conversation")
+        print("To end the conversation, enter 'exit'. The agent will print a summary of the conversation")
         print("Starting the Conversation Agent")
         print("...")
 
@@ -106,7 +114,7 @@ class Conversation:
             input_variables=["summary", "new_lines"], template=SUMMARIZER_TEMPLATE
         )
         sm = SummarizerMixin(llm=self.llm, prompt=FINAL_SUMMARY_PROMPT)
-        print(sm.predict_new_summary(c.memory.chat_memory.messages, ""))
+        print(sm.predict_new_summary(self.memory.chat_memory.messages, ""))
 
 
 if __name__ == "__main__":
