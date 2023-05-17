@@ -41,17 +41,10 @@ class Conversation:
             return_source_documents=True,
             get_chat_history=lambda h: h,
             verbose=debug_mode)
-        # self.chain = ConversationalRetrievalChain.from_llm(OpenAI(temperature=0),
-        #                                                    self.embedder.get_vectorstore().as_retriever(),
-        #                                                    memory=self.memory,
-        #                                                    max_tokens_limit=3000,
-        #                                                    return_source_documents=True,
-        #                                                    get_chat_history=lambda h: h,
-        #                                                    qa_prompt=QA_PROMPT)
         self.debug = debug_mode
 
     def achat(self):
-        query = input("Question : ")
+        query = input("Query : ")
         if query == 'exit' or '':
             return False
         ret = self.chain({'question': query})
@@ -59,24 +52,33 @@ class Conversation:
             print(ret)
         print('Answer : ', ret.get('answer'))
         source_docs = ret.get('source_documents')
+        self._print_citations(source_docs)
+        return True
+
+    def _print_citations(self, source_docs):
         lectures_home = "https://stanford-cs324.github.io/winter2022/lectures/"
         table_home = "https://github.com/Hannibal046/Awesome-LLM/blob/main/README.md#milestone-papers"
-        print('References : ' )
+        print('References : ')
         for sd in source_docs:
             if sd.metadata.get('file', ''):
                 file = sd.metadata.get('file')
                 if file != 'table':
-                    title='-'.join(sd.page_content.split('\n')[0].lower().split())
-                    print(lectures_home+file+'/#'+title)
+                    title = '-'.join(sd.page_content.split('\n')[0].lower().split())
+                    print(lectures_home + file + '/#' + title)
                 else:
-                    print(table_home+file)
-        return True
-
+                    print(table_home + file)
     def chat(self):
+        self._start_chat()
         continue_conversation = self.achat()
         while continue_conversation:
             continue_conversation = self.achat()
         self.summarize_conversation()
+
+    def _start_chat(self):
+        print("Instructions : Enter your queries in stdin when prompted. The agent will reply.")
+        print("To end the conversation, enter 'exit' or empty. The agent will print a summary of the conversation")
+        print("Starting the Conversation Agent")
+        print("...")
 
     def summarize_conversation(self):
         SUMMARIZER_TEMPLATE = """Progressively summarize the lines of conversation provided, adding onto the previous summary returning a new summary. Format the summary into bullet points. Keep the summary very short.
