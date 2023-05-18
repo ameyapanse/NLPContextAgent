@@ -1,0 +1,2 @@
+langchain==0.0.172
+methodtools==0.4.7
