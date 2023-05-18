@@ -65,6 +65,8 @@ class Conversation:
         print('References : ')
         referred = []
         for sd in source_docs:
+            if len(referred) >= 2:
+                break
             if sd.metadata.get('file', ''):
                 file = sd.metadata.get('file')
                 if file != 'table':
