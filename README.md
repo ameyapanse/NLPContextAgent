@@ -12,7 +12,7 @@ Utilizes LLMs and open-source vector indexing and storage frameworks to answer s
 ### Base Architecture
 - Get and save document embeddings from llm. Uses the OpenAI's text-embedding-ada-002 as recommended by their documentation
 - Pick top-k documents according to the similarity score w.r.t the query embeddings.
-- Pass these docs as context along with the query to the model---
+- Pass these docs as context along with the query to the model
 
 ### Conversational History
 - Uses a conversation prompt
