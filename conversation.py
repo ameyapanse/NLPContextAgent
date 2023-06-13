@@ -14,13 +14,14 @@ from langchain.prompts.prompt import PromptTemplate
 class Conversation:
     def __init__(self, debug_mode=False):
         self.embedder = Embedder()
-        self.embedder.embed_all_docs()
+        #self.embedder.embed_all_docs()
         self.vectorstore = self.embedder.get_vectorstore()
         # self.memory = ConversationBufferMemory(memory_key="chat_history",
         #                                        return_messages=True,
         #                                        output_key='answer')
         self.llm = ChatOpenAI(
-            temperature=0.0)
+            temperature=0.0,
+            model_name="gpt-3.5-turbo")
 
         self.memory = ConversationSummaryBufferMemory(
             llm=self.llm,
