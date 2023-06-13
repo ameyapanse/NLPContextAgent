@@ -3,6 +3,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import MarkdownTextSplitter
+from langchain.document_loaders import PyPDFLoader
 from MyMDTextSplitter import MyMDTextSplitter
 from os import listdir
 from os.path import isfile, join
@@ -35,13 +36,25 @@ class Embedder:
         return self.md_splitter.create_documents(texts=[text],metadatas=[{'file':file.split('/')[-1].split('.')[0]}])
         #return UnstructuredMarkdownLoader(file, mode="elements").load()
 
+    def create_pdf_docs(self, pdf_path):
+        loader = PyPDFLoader(pdf_path)
+        pages = loader.load_and_split()
+        return pages
+
     def embed_doc(self, docs):
+        self.vectordb.add_documents(docs)
+
+    def embed_pdf_doc(self, docs):
         self.vectordb.add_documents(docs)
 
     def embed_all_docs(self, path='data/use'):
         data_files = [join(path,f) for f in listdir(path) if isfile(join(path, f))]
         for f in data_files:
-            self.embed_doc(self.create_docs(f))
+            if f.split('.')[-1] == 'md':
+                self.embed_doc(self.create_docs(f))
+            else:
+                if f.split('.')[-1] == 'pdf':
+                    self.embed_pdf_doc(self.create_pdf_docs(f))
         self.vectordb.persist()
 
 if __name__ == "__main__":
