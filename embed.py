@@ -8,6 +8,8 @@ from os import listdir
 from os.path import isfile, join
 from methodtools import lru_cache
 
+from langchain.embeddings import HuggingFaceHubEmbeddings
+
 class Embedder:
     def __init__(self,
                  persist_directory='db',
@@ -15,8 +17,16 @@ class Embedder:
                  model="text-embedding-ada-002"):
         if not os.environ.get('OPENAI_API_KEY', None):
             os.environ['OPENAI_API_KEY'] = "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"
-        self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
-        self.vectordb = Chroma(persist_directory=persist_directory, embedding_function=self.embedding)
+
+        os.environ['HUGGINGFACEHUB_API_TOKEN'] = 'Hugging face website'
+        # self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
+
+        self.embeddings = HuggingFaceHubEmbeddings(
+        huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
+    )
+        
+        # self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
+        self.vectordb = Chroma(persist_directory=persist_directory, embedding_function=self.embeddings)
         self.md_splitter = MarkdownTextSplitter()
 
     def get_vectorstore(self):
