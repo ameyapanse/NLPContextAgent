@@ -60,7 +60,7 @@ class Conversation:
         return True
 
     def _print_citations(self, source_docs):
-        lectures_home = "https://stanford-cs324.github.io/winter2022/lectures/"
+        lectures_home = "https://github.com/cs231n/cs231n.github.io"
         table_home = "https://github.com/Hannibal046/Awesome-LLM/blob/main/README.md#milestone-papers"
         print('References : ')
         referred = []
