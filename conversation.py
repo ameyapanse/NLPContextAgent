@@ -20,8 +20,7 @@ class Conversation:
         #                                        return_messages=True,
         #                                        output_key='answer')
         self.llm = ChatOpenAI(
-            temperature=0.0,
-            model_name="gpt-3.5-turbo")
+            temperature=0.0)
 
         self.memory = ConversationSummaryBufferMemory(
             llm=self.llm,
