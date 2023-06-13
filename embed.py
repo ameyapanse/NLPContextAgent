@@ -13,14 +13,11 @@ from langchain.embeddings import HuggingFaceHubEmbeddings
 class Embedder:
     def __init__(self,
                  persist_directory='hfembeddb',
-                 key="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",
+                 key="",
                  model="text-embedding-ada-002"):
-        if not os.environ.get('OPENAI_API_KEY', None):
-            os.environ['OPENAI_API_KEY'] = "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"
-
-        os.environ['HUGGINGFACEHUB_API_TOKEN'] = 'Hugging face website'
+        os.environ['OPENAI_API_KEY'] = "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"
+        os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
         # self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
-
         self.embeddings = HuggingFaceHubEmbeddings(
         huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
     )
