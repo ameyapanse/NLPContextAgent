@@ -14,7 +14,7 @@ from langchain.prompts.prompt import PromptTemplate
 class Conversation:
     def __init__(self, debug_mode=False):
         self.embedder = Embedder()
-        #self.embedder.embed_all_docs()
+        self.embedder.embed_all_docs(path='data/cs231n')
         self.vectorstore = self.embedder.get_vectorstore()
         # self.memory = ConversationBufferMemory(memory_key="chat_history",
         #                                        return_messages=True,
@@ -45,7 +45,7 @@ class Conversation:
         self.hot_start()
 
     def hot_start(self):
-        self.chain({'question': "What are some milestone model architectures and papers in the last few years?"})
+        self.chain({'question': "What are convolutional neural networks and how are they used ?"})
 
     def achat(self):
         query = input("Query : ")
