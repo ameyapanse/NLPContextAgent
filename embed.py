@@ -12,7 +12,7 @@ from langchain.embeddings import HuggingFaceHubEmbeddings
 
 class Embedder:
     def __init__(self,
-                 persist_directory='db',
+                 persist_directory='hfembeddb',
                  key="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",
                  model="text-embedding-ada-002"):
         if not os.environ.get('OPENAI_API_KEY', None):
