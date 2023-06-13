@@ -13,8 +13,6 @@ class Embedder:
                  persist_directory='db',
                  key="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",
                  model="text-embedding-ada-002"):
-        if not os.environ.get('OPENAI_API_KEY', None):
-            os.environ['OPENAI_API_KEY'] = "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"
         self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
         self.vectordb = Chroma(persist_directory=persist_directory, embedding_function=self.embedding)
         self.md_splitter = MarkdownTextSplitter()
