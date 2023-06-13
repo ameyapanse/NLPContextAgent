@@ -16,7 +16,7 @@ class Embedder:
                  persist_directory='hfembeddb',
                  key="",
                  model="text-embedding-ada-002"):
-        os.environ['OPENAI_API_KEY'] = "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"
+        os.environ['OPENAI_API_KEY'] = "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"
         os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
         # self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
         self.embeddings = HuggingFaceHubEmbeddings(
@@ -45,7 +45,7 @@ class Embedder:
         self.vectordb.add_documents(docs)
 
     def embed_pdf_doc(self, docs):
-        self.vectordb.add_documents(docs)
+        self.vectordb.from_documents(docs,embedding=self.embeddings)
 
     def embed_all_docs(self, path='data/use'):
         data_files = [join(path,f) for f in listdir(path) if isfile(join(path, f))]
