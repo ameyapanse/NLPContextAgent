@@ -14,7 +14,7 @@ def _print_citations(source_docs):
             file = sd.metadata.get('source')
             data, course, lecture_file = file.split('/')
             lecture, filetype = lecture_file.split('.')
-            page = sd.metadata.get('page_number', '')
+            page = sd.metadata.get('page', '')
             if filetype == 'pdf':
                 print('Course : ', course.upper(), ' Lecture : ', lecture.split('.')[0], ' Page : ', page)
             else:
