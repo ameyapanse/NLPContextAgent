@@ -38,7 +38,7 @@ def create_md_docs_splitter(md_path):
 
 class Embedder:
     def __init__(self,
-                 persist_directory='chroma_db_huggingface'):
+                 persist_directory='chroma_databases/db_all'):
         self.dir = persist_directory
         self.embeddings = HuggingFaceHubEmbeddings(
             huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
@@ -56,6 +56,7 @@ class Embedder:
     def embed_docs_in_directory(self, path):
         data_files = [join(path, f) for f in listdir(path) if isfile(join(path, f))]
         for f in data_files:
+            print(f)
             file_type = f.split('.')[-1]
             if file_type == 'md':
                 create_docs = create_md_docs
@@ -81,8 +82,17 @@ if __name__ == "__main__":
     pdf_docs = create_pdf_docs('data/cs234/lecture01.pdf')
     assert pdf_docs[0].metadata.get('source', '') == 'data/cs234/lecture01.pdf'
 
-    # Test Embedder
+    # Run Embedder
     from configs import set_keys
     set_keys()
     e = Embedder()
     e.embed_all_documents()
+
+    e_cs231n = Embedder('chroma_databases/db_cs231n')
+    e_cs231n.embed_all_documents(['cs231n'])
+
+    e_cs234 = Embedder('chroma_databases/db_cs234')
+    e_cs234.embed_all_documents(['cs234'])
+
+    e_cs324 = Embedder('chroma_databases/db_cs324')
+    e_cs324.embed_all_documents(['cs324'])
