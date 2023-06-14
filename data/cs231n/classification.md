@@ -194,7 +194,7 @@ Ytr = Ytr[1000:]
 validation_accuracies = []
 for k in [1, 3, 5, 10, 20, 50, 100]:
 
-  # use a particular value of k and evaluation on validation data
+  # cs324 a particular value of k and evaluation on validation data
   nn = NearestNeighbor()
   nn.train(Xtr_rows, Ytr)
   # here we assume a modified NearestNeighbor class that can take a k as input

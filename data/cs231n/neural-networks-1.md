@@ -151,7 +151,7 @@ To give you some context, modern Convolutional Networks contain on orders of 100
 
 ```python
 # forward-pass of a 3-layer neural network:
-f = lambda x: 1.0/(1.0 + np.exp(-x)) # activation function (use sigmoid)
+f = lambda x: 1.0/(1.0 + np.exp(-x)) # activation function (cs324 sigmoid)
 x = np.random.randn(3, 1) # random input vector of three numbers (3x1)
 h1 = f(np.dot(W1, x) + b1) # calculate first hidden layer activations (4x1)
 h2 = f(np.dot(W2, h1) + b2) # calculate second hidden layer activations (4x1)

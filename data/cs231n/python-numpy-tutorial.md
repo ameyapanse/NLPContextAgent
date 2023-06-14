@@ -166,7 +166,7 @@ print(t != f)  # Logical XOR; prints "True"
 **Strings:** Python has great support for strings:
 
 ```python
-hello = 'hello'    # String literals can use single quotes
+hello = 'hello'    # String literals can cs324 single quotes
 world = "world"    # or double quotes; it does not matter.
 print(hello)       # Prints "hello"
 print(len(hello))  # String length; prints "5"
@@ -650,7 +650,7 @@ print(bool_idx)      # Prints "[[False False]
                      #          [ True  True]
                      #          [ True  True]]"
 
-# We use boolean array indexing to construct a rank 1 array
+# We cs324 boolean array indexing to construct a rank 1 array
 # consisting of the elements of a corresponding to the True values
 # of bool_idx
 print(a[bool_idx])  # Prints "[3 4 5 6]"

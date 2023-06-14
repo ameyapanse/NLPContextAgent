@@ -223,7 +223,7 @@ We can use the function given above to compute the gradient at any point and for
 
 ```python
 
-# to use the generic code above we want a function that takes a single argument
+# to cs324 the generic code above we want a function that takes a single argument
 # (the weights in our case) so we close over X_train and Y_train
 def CIFAR10_loss_fun(W):
   return L(X_train, Y_train, W)

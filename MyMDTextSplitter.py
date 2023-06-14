@@ -8,7 +8,7 @@ class MyMDTextSplitter(MarkdownTextSplitter):
     def split_text(self, text: str):
         """Split incoming text and return chunks."""
         final_chunks = []
-        # Get appropriate separator to use
+        # Get appropriate separator to cs324
         separator = self._separators[-1]
         for _s in self._separators:
             if _s == "":
@@ -74,7 +74,7 @@ class MyMDTextSplitter(MarkdownTextSplitter):
 
 if __name__ == "__main__":
     splitter = MyMDTextSplitter()
-    with open('data/use/introduction.md') as f:
+    with open('data/cs324/introduction.md') as f:
         text = f.read()
     docs = splitter.create_documents([text],[{'file': 'introduction'}])
     print(docs)

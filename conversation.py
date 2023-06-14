@@ -1,24 +1,44 @@
-from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
-from langchain import PromptTemplate
-from embed import Embedder
+from langchain.memory import ConversationSummaryBufferMemory
 from langchain.memory.summary import SummarizerMixin
-from langchain.chains import LLMChain
-from langchain.chains.question_answering import load_qa_chain
-from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
 from langchain.prompts.prompt import PromptTemplate
+
+from embed import Embedder
+
+
+def _print_citations(source_docs):
+    print('References : ')
+    for sd in source_docs:
+        if sd.metadata.get('source', ''):
+            file = sd.metadata.get('source')
+            data, course, lecture_file = file.split('/')
+            lecture, filetype = lecture_file.split('.')
+            page = sd.metadata.get('page', '')
+            if filetype == 'pdf':
+                print('Course : ', course.upper(), ' Lecture : ', lecture.split('.')[0], ' Page : ', page)
+            else:
+                print('Course : ', course.upper(), ' Lecture : ', lecture.split('.')[0])
+
+
+def _start_chat():
+    print("Instructions : Enter your queries in stdin when prompted. The agent will reply.")
+    print("To end the conversation, enter 'exit'. The agent will print a summary of the conversation")
+    print("Starting the Conversation Agent")
+    print("...")
 
 
 class Conversation:
-    def __init__(self, debug_mode=False):
-        self.embedder = Embedder()
-        #self.embedder.embed_all_docs()
+    def __init__(self, debug_mode=False, courses=None):
+        if courses is None:
+            self.courses = ['cs231n', 'cs234', 'cs324']
+        else:
+            self.courses = courses
+        if len(self.courses) == 3:
+            self.embedder = Embedder()
+        if len(self.courses) == 1:
+            self.embedder = Embedder(persist_directory='chroma_databases/db_'+self.courses[0])
         self.vectorstore = self.embedder.get_vectorstore()
-        # self.memory = ConversationBufferMemory(memory_key="chat_history",
-        #                                        return_messages=True,
-        #                                        output_key='answer')
         self.llm = ChatOpenAI(
             temperature=0.0,
             model_name="gpt-3.5-turbo")
@@ -45,7 +65,13 @@ class Conversation:
         self.hot_start()
 
     def hot_start(self):
-        self.chain({'question': "What are some milestone model architectures and papers in the last few years?"})
+        if 'cs231n' in self.courses:
+            self.chain({'question': "What are convolutional neural networks and how are they used ?"})
+        if 'cs324' in self.courses:
+            self.chain({'question': "In large language models, what are some milestone model architectures and papers "
+                                    "in the last few years?"})
+        if 'cs234' in self.courses:
+            self.chain({'question': "What is reinforcement learning and what are its applications?"})
 
     def achat(self):
         query = input("Query : ")
@@ -56,49 +82,21 @@ class Conversation:
             print(ret)
         print('Answer : ', ret.get('answer'))
         source_docs = ret.get('source_documents')
-        self._print_citations(source_docs)
+        _print_citations(source_docs)
         return True
 
-    def _print_citations(self, source_docs):
-        lectures_home = "https://stanford-cs324.github.io/winter2022/lectures/"
-        table_home = "https://github.com/Hannibal046/Awesome-LLM/blob/main/README.md#milestone-papers"
-        print('References : ')
-        referred = []
-        for sd in source_docs:
-            if len(referred) >= 2:
-                break
-            if sd.metadata.get('file', ''):
-                file = sd.metadata.get('file')
-                if file != 'table':
-                    title = '-'.join(sd.page_content.split('\n')[0].lower().split())
-                    if file + '/' + title in referred:
-                        continue
-                    print(lectures_home + file + '/#' + title)
-                    referred.append(file+ '/'+title)
-                else:
-                    if file in referred:
-                        continue
-                    print(table_home + file)
-                    referred.append(file)
-
     def chat(self):
-        self._start_chat()
+        _start_chat()
         continue_conversation = self.achat()
         while continue_conversation:
             continue_conversation = self.achat()
         self.summarize_conversation()
 
-    def _start_chat(self):
-        print("Instructions : Enter your queries in stdin when prompted. The agent will reply.")
-        print("To end the conversation, enter 'exit'. The agent will print a summary of the conversation")
-        print("Starting the Conversation Agent")
-        print("...")
-
     def summarize_conversation(self):
-        SUMMARIZER_TEMPLATE = """Progressively summarize the lines of conversation provided, adding onto the previous summary returning a new summary. Format the summary into bullet points. Keep the summary very short.
-            EXAMPLE
-            Current summary:
-            The human asks what the AI thinks of artificial intelligence. The AI thinks artificial intelligence is a force for good.
+        SUMMARIZER_TEMPLATE = """Progressively summarize the lines of conversation provided, adding onto the previous 
+        summary returning a new summary. Format the summary into bullet points. Keep the summary very short. EXAMPLE 
+        Current summary: The human asks what the AI thinks of artificial intelligence. The AI thinks artificial 
+        intelligence is a force for good.
 
             New lines of conversation:
             Human: Why do you think artificial intelligence is a force for good?
@@ -124,5 +122,8 @@ class Conversation:
 
 
 if __name__ == "__main__":
-    c = Conversation(True)
+    from configs import set_keys
+
+    set_keys()
+    c = Conversation(debug_mode=True, courses=None)
     c.chat()
