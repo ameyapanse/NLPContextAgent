@@ -36,7 +36,7 @@ class Conversation:
             self.courses = courses
         if len(self.courses) == 3:
             self.embedder = Embedder()
-        if len(self.courses == 1):
+        if len(self.courses) == 1:
             self.embedder = Embedder(persist_directory='chroma_databases/db_'+self.courses[0])
         self.vectorstore = self.embedder.get_vectorstore()
         self.llm = ChatOpenAI(
@@ -125,5 +125,5 @@ if __name__ == "__main__":
     from configs import set_keys
 
     set_keys()
-    c = Conversation(True)
+    c = Conversation(debug_mode=True, courses=None)
     c.chat()
