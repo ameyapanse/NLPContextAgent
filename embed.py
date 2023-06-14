@@ -1,63 +1,88 @@
 import os
-from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
-from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import MarkdownTextSplitter
-from langchain.document_loaders import PyPDFLoader
-from MyMDTextSplitter import MyMDTextSplitter
+from langchain.document_loaders import PyPDFLoader, UnstructuredMarkdownLoader
 from os import listdir
-from os.path import isfile, join
-from methodtools import lru_cache
+from os.path import isdir, isfile, join
 
 from langchain.embeddings import HuggingFaceHubEmbeddings
 
+
+def create_pdf_docs(pdf_path):
+    loader = PyPDFLoader(pdf_path)
+    pages = loader.load_and_split()
+    return pages
+
+
+def create_md_docs(md_path, use_splitter=False):
+    if use_splitter:
+        return create_md_docs_splitter(md_path)
+    return create_md_docs_loader(md_path)
+
+
+def create_md_docs_loader(md_path):
+    loader = UnstructuredMarkdownLoader(md_path, mode='elements')
+    pages = loader.load_and_split()
+    return pages
+
+
+def create_md_docs_splitter(md_path):
+    splitter = MarkdownTextSplitter()
+    with open(md_path) as f:
+        text = f.read()
+    metadata = {
+        'source': md_path.split('/')[-1]
+    }
+    return splitter.create_documents(texts=[text], metadatas=[metadata])
+
+
 class Embedder:
     def __init__(self,
-                 persist_directory='hfembeddb',
-                 key="",
-                 model="text-embedding-ada-002"):
-        os.environ['OPENAI_API_KEY'] = "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"
-        os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
-        # self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
+                 persist_directory='chroma_db_huggingface'):
+        self.dir = persist_directory
         self.embeddings = HuggingFaceHubEmbeddings(
-        huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
-    )
-        
-        # self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
+            huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
+        )
         self.vectordb = Chroma(persist_directory=persist_directory, embedding_function=self.embeddings)
         self.md_splitter = MarkdownTextSplitter()
 
     def get_vectorstore(self):
         return self.vectordb
 
-    def create_docs(self, file):
-        with open(file) as f:
-            text = f.read()
-        return self.md_splitter.create_documents(texts=[text],metadatas=[{'file':file.split('/')[-1].split('.')[0]}])
-        #return UnstructuredMarkdownLoader(file, mode="elements").load()
-
-    def create_pdf_docs(self, pdf_path):
-        loader = PyPDFLoader(pdf_path)
-        pages = loader.load_and_split()
-        return pages
-
     def embed_doc(self, docs):
         self.vectordb.add_documents(docs)
-
-    def embed_pdf_doc(self, docs):
-        self.vectordb.from_documents(docs,embedding=self.embeddings)
-
-    def embed_all_docs(self, path='data/use'):
-        data_files = [join(path,f) for f in listdir(path) if isfile(join(path, f))]
-        for f in data_files:
-            if f.split('.')[-1] == 'md':
-                self.embed_doc(self.create_docs(f))
-            else:
-                if f.split('.')[-1] == 'pdf':
-                    self.embed_pdf_doc(self.create_pdf_docs(f))
         self.vectordb.persist()
 
-if __name__ == "__main__":
-    e = Embedder()
-    e.embed_all_docs()
+    def embed_docs_in_directory(self, path):
+        data_files = [join(path, f) for f in listdir(path) if isfile(join(path, f))]
+        for f in data_files:
+            file_type = f.split('.')[-1]
+            if file_type == 'md':
+                create_docs = create_md_docs
+            else:
+                if file_type == 'pdf':
+                    create_docs = create_pdf_docs
+                else:
+                    continue
+            self.embed_doc(create_docs(f))
 
+    def embed_all_documents(self, courses=None):
+        if courses is None:
+            courses = ['cs231n', 'cs234', 'cs324']
+        for course in courses:
+            self.embed_docs_in_directory(join('data', course))
+
+if __name__ == "__main__":
+    # Test md docs
+    md_docs = create_md_docs('data/cs324/introduction.md')
+    assert md_docs[0].metadata.get('source', '') == 'data/cs324/introduction.md'
+
+    # Test pdf docs
+    pdf_docs = create_pdf_docs('data/cs234/lecture01.pdf')
+    assert pdf_docs[0].metadata.get('source', '') == 'data/cs234/lecture01.pdf'
+
+    # Test Embedder
+    from configs import set_keys
+    set_keys()
+    e = Embedder()
+    e.embed_all_documents()

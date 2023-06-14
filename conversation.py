@@ -1,24 +1,21 @@
-from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
-from langchain import PromptTemplate
-from embed import Embedder
+from langchain.memory import ConversationSummaryBufferMemory
 from langchain.memory.summary import SummarizerMixin
-from langchain.chains import LLMChain
-from langchain.chains.question_answering import load_qa_chain
-from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
 from langchain.prompts.prompt import PromptTemplate
+
+from embed import Embedder
 
 
 class Conversation:
-    def __init__(self, debug_mode=False):
+    def __init__(self, debug_mode=False, courses=None):
+        if courses is None:
+            self.courses = ['cs231n', 'cs234', 'cs324']
+        else:
+            self.courses = courses
         self.embedder = Embedder()
-        self.embedder.embed_all_docs(path='data/cs234')
+        self.embedder.embed_all_documents(courses=self.courses)
         self.vectorstore = self.embedder.get_vectorstore()
-        # self.memory = ConversationBufferMemory(memory_key="chat_history",
-        #                                        return_messages=True,
-        #                                        output_key='answer')
         self.llm = ChatOpenAI(
             temperature=0.0,
             model_name="gpt-3.5-turbo")
@@ -45,7 +42,13 @@ class Conversation:
         self.hot_start()
 
     def hot_start(self):
-        self.chain({'question': "What are convolutional neural networks and how are they used ?"})
+        if 'cs231n' in self.courses:
+            self.chain({'question': "What are convolutional neural networks and how are they used ?"})
+        if 'cs324' in self.courses:
+            self.chain({'question': "In large language models, what are some milestone model architectures and papers "
+                                    "in the last few years?"})
+        if 'cs234' in self.courses:
+            self.chain({'question': "What is reinforcement learning and what are its applications?"})
 
     def achat(self):
         query = input("Query : ")
@@ -60,26 +63,33 @@ class Conversation:
         return True
 
     def _print_citations(self, source_docs):
-        lectures_home = "https://cs231n.github.io/"
-        table_home = "https://github.com/Hannibal046/Awesome-LLM/blob/main/README.md#milestone-papers"
+        # lectures_home = "https://cs231n.github.io/"
+        # table_home = "https://github.com/Hannibal046/Awesome-LLM/blob/main/README.md#milestone-papers"
         print('References : ')
         referred = []
         for sd in source_docs:
             if len(referred) >= 2:
                 break
-            if sd.metadata.get('file', ''):
-                file = sd.metadata.get('file')
-                if file != 'table':
-                    title = '-'.join(sd.page_content.split('\n')[0].lower().split())
-                    if file + '/' + title in referred:
-                        continue
-                    print(lectures_home + file + '/#' + title)
-                    referred.append(file+ '/'+title)
+            if sd.metadata.get('source', ''):
+                file = sd.metadata.get('source')
+                data, course, lecture_file = file.split('/')
+                lecture, filetype = lecture_file.split('.')
+                page = sd.metadata.get('page_number', '')
+                if filetype == 'pdf':
+                    print('Course : ', course.upper(), ' Lecture : ', lecture.split('.')[0], ' Page : ', page)
                 else:
-                    if file in referred:
-                        continue
-                    print(table_home + file)
-                    referred.append(file)
+                    print('Course : ', course.upper(), ' Lecture : ', lecture.split('.')[0])
+                # if file != 'table':
+                #     title = '-'.join(sd.page_content.split('\n')[0].lower().split())
+                #     if file + '/' + title in referred:
+                #         continue
+                #     print(lectures_home + file + '/#' + title)
+                #     referred.append(file+ '/'+title)
+                # else:
+                #     if file in referred:
+                #         continue
+                #     print(table_home + file)
+                #     referred.append(file)
 
     def chat(self):
         self._start_chat()
@@ -124,5 +134,8 @@ class Conversation:
 
 
 if __name__ == "__main__":
+    from configs import set_keys
+
+    set_keys()
     c = Conversation(True)
     c.chat()
