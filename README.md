@@ -6,13 +6,14 @@
 - Make sure your keys are in keys/openai_api_key and keys/huggingfacehub_api_token
 - Run python main.py
 
-## Solution Overview
 
 ## Capabilities
 - Embedding over all the lectures and table
 - Able to give contextual answers, has conversational memory
 - Gives out references, but not 100%
 - Generates summaries
+
+## Solution Overview
 
 ### Base Architecture
 - Get and save document embeddings from llm. Uses the HuggingFaceHub's GPT-2 as recommended by their documentation
@@ -37,4 +38,11 @@
 - Stanford LLMs Lecture Notes: https://stanford-cs324.github.io/winter2022/lectures/
 - Stanford CNN Lecture Notes : https://cs231n.github.io/
 - Stanford RL Lecture Notes  : https://github.com/tallamjr/stanford-cs234/tree/master/slides
+
+
+### Google Forms for Agent Evaluation
+- CS324 Responder Link https://forms.gle/9QmBkhvvQjavJbM87
+- CS234 Responder Link https://forms.gle/VUsxfj8fP5pE8VVY6
+- CS231n Responder Link https://forms.gle/ASBXgqv6H9JogpRN8
+- Mix Data Responder Link https://forms.gle/i1anmawfDdFzFUraA
 
