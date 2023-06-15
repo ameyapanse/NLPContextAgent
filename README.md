@@ -1,10 +1,8 @@
-# Natural Language Query Agent
-
-Utilizes LLMs and open-source vector indexing and storage frameworks to answer simple questions over a small set of lecture notes and a table of LLM architectures.
+# Contextualized Conversational Agent
 
 
 ## Instructions:
-- Install langchain and chromadb
+- Install langchain, chromadb, pypdf
 - Run python main.py
 
 ## Solution Overview
