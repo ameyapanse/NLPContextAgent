@@ -3,6 +3,7 @@
 
 ## Instructions:
 - Install langchain, chromadb, pypdf
+- 
 - Run python main.py
 
 ## Solution Overview

@@ -125,5 +125,5 @@ if __name__ == "__main__":
     from configs import set_keys
 
     set_keys()
-    c = Conversation(debug_mode=True, courses=['cs231n'])
+    c = Conversation(debug_mode=True, courses=None)
     c.chat()
