@@ -3,6 +3,7 @@
 
 ## Instructions:
 - Install langchain, chromadb, pypdf
+- Make sure your keys are in keys/openai_api_key and keys/huggingfacehub_api_token
 - Run python main.py
 
 ## Solution Overview
